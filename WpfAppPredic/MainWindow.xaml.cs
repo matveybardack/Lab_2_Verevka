@@ -20,5 +20,20 @@ namespace WpfAppPredic
         {
             InitializeComponent();
         }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            HelpPopup.IsOpen = !HelpPopup.IsOpen;
+        }
+
+        private void CloseHelp_Click(object sender, RoutedEventArgs e)
+        {
+            HelpPopup.IsOpen = false;
+        }
     }
 }
