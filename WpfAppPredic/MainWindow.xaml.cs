@@ -15,6 +15,14 @@ namespace WpfAppPredic
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+    enum LockButtonTypes
+    {
+        None,
+        Quantifier,
+        Logical,
+        Equation
+    }
     public partial class MainWindow : Window
     {
         private bool AddingEq = false;
@@ -93,7 +101,7 @@ namespace WpfAppPredic
             // Обновляем текстовое поле
             PredicateTextBox.Text = string.Join(Environment.NewLine, equationsWithQuantifiersList);
 
-            EnableLogicalButtons(true);
+            EnableAllButtons(true, LockButtonTypes.Logical);
             // Закрываем панель с логическими операторами
             AnimationClosePanel(LogicalOperatorsGrid);
         }
@@ -159,7 +167,7 @@ namespace WpfAppPredic
             // Обновляем текстовое поле
             PredicateTextBox.Text = string.Join(Environment.NewLine, equationsList);
 
-            EnableQuantifierButtons(true);
+            EnableAllButtons(true, LockButtonTypes.Quantifier);
             // Закрываем панель с разблокировкой кнопок
             AnimationClosePanel(QuantifierGrid);
         }
@@ -170,31 +178,31 @@ namespace WpfAppPredic
         {
             AnimationOpenPanel(LogicalOperatorsGrid);
             selectedLogicalOperator = "!";
-            EnableLogicalButtons(false);
+            EnableAllButtons(false, LockButtonTypes.Logical);
         }
         private void Button_Add_And_Click(object sender, RoutedEventArgs e)
         {
             AnimationOpenPanel(LogicalOperatorsGrid);
             selectedLogicalOperator = "&&";
-            EnableLogicalButtons(false);
+            EnableAllButtons(false, LockButtonTypes.Logical);
         }
         private void Button_Add_Or_Click(object sender, RoutedEventArgs e)
         {
             AnimationOpenPanel(LogicalOperatorsGrid);
             selectedLogicalOperator = "||";
-            EnableLogicalButtons(false);
+            EnableAllButtons(false, LockButtonTypes.Logical);
         }
         private void Button_Add_Imp_Click(object sender, RoutedEventArgs e)
         {
             AnimationOpenPanel(LogicalOperatorsGrid);
             selectedLogicalOperator = "->";
-            EnableLogicalButtons(false);
+            EnableAllButtons(false, LockButtonTypes.Logical);
         }
         private void Button_Add_Equiv_Click(object sender, RoutedEventArgs e)
         {
             AnimationOpenPanel(LogicalOperatorsGrid);
             selectedLogicalOperator = "<->";
-            EnableLogicalButtons(false);
+            EnableAllButtons(false, LockButtonTypes.Logical);
         }
 
 
@@ -204,7 +212,7 @@ namespace WpfAppPredic
             if (!IsQuantifierPanelOpen)
             {
                 SelectedQuantifier = "∀";
-                EnableQuantifierButtons(false);
+                EnableAllButtons(false, LockButtonTypes.Equation);
                 AnimationOpenPanel(QuantifierGrid);
             }
         }
@@ -214,7 +222,7 @@ namespace WpfAppPredic
             if (!IsQuantifierPanelOpen)
             {
                 SelectedQuantifier = "∃";
-                EnableQuantifierButtons(false);
+                EnableAllButtons(false, LockButtonTypes.Equation);
                 AnimationOpenPanel(QuantifierGrid);
             }
         }
@@ -224,7 +232,7 @@ namespace WpfAppPredic
         private void Button_Add_Eq_Click(object sender, RoutedEventArgs e)
         {
             // Добавить проверку корректности
-            EnableAddEqButton(true);
+            EnableAllButtons(true, LockButtonTypes.Equation);
             AddEquationToPredicate();
             AnimationClosePanel(GridAddEq);
         }
@@ -242,29 +250,48 @@ namespace WpfAppPredic
                 AnimationClosePanel(GridAddEq);
             } else {
                 AddingEq = true;
-                EnableAddEqButton(false);
+                EnableAllButtons(false, LockButtonTypes.Equation);
                 AnimationOpenPanel(GridAddEq);
             }
         }
 
-        private void EnableQuantifierButtons(bool enable)
+        private void EnableAllButtons(bool enable, LockButtonTypes buttonType)
         {
-            Button_Add_Forall.IsEnabled = enable;
-            Button_Add_Exists.IsEnabled = enable;
-        }
-
-        private void EnableAddEqButton(bool enable)
-        {
-            Button_AddEq.IsEnabled = enable;
-        }
-
-        private void EnableLogicalButtons(bool enable)
-        {
-            Button_Logical_And.IsEnabled = enable;
-            Button_Logical_Imp.IsEnabled = enable;
-            Button_Logical_Not.IsEnabled = enable;
-            Button_Logical_Or.IsEnabled = enable;
-            Button_Logical_Equiv.IsEnabled = enable;
+            switch (buttonType)
+            { 
+                case LockButtonTypes.Equation:
+                    Button_Add_Forall.IsEnabled = enable;
+                    Button_Add_Exists.IsEnabled = enable;
+                    Button_Logical_And.IsEnabled = enable;
+                    Button_Logical_Imp.IsEnabled = enable;
+                    Button_Logical_Not.IsEnabled = enable;
+                    Button_Logical_Or.IsEnabled = enable;
+                    Button_Logical_Equiv.IsEnabled = enable;
+                    Button_AddEq.IsEnabled = enable;
+                    break;
+                case LockButtonTypes.Logical:
+                    Button_Add_Forall.IsEnabled = enable;
+                    Button_Add_Exists.IsEnabled = enable;
+                    //Button_Logical_And.IsEnabled = enable;
+                    //Button_Logical_Imp.IsEnabled = enable;
+                    //Button_Logical_Not.IsEnabled = enable;
+                    //Button_Logical_Or.IsEnabled = enable;
+                    //Button_Logical_Equiv.IsEnabled = enable;
+                    Button_AddEq.IsEnabled = enable;
+                    break;
+                case LockButtonTypes.Quantifier:
+                    Button_Add_Forall.IsEnabled = enable;
+                    Button_Add_Exists.IsEnabled = enable;
+                    Button_Logical_And.IsEnabled = enable;
+                    Button_Logical_Imp.IsEnabled = enable;
+                    Button_Logical_Not.IsEnabled = enable;
+                    Button_Logical_Or.IsEnabled = enable;
+                    Button_Logical_Equiv.IsEnabled = enable;
+                    Button_AddEq.IsEnabled = enable;
+                    break;
+                default:
+                    break;
+            }
         }
         //private void HelpButton_Click(object sender, RoutedEventArgs e)
         //{
