@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ClassLibraryPredic
+namespace ClassLibraryPredic.Interface
 {
     /// <summary>
     /// Базовый интерфейс предиката — может быть вычислен для конкретного назначения переменных.

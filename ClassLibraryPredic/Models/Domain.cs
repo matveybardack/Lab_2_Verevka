@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ClassLibraryPredic
+namespace ClassLibraryPredic.Models
 {
     /// <summary>
     /// Простая обёртка для областей определения переменных.
