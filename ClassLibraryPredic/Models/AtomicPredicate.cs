@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ClassLibraryPredic
+namespace ClassLibraryPredic.Models
 {
     /// <summary>
     /// Атомарный предикат, определяется функцией evaluator,
