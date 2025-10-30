@@ -17,6 +17,21 @@ namespace WpfAppPredic
     /// </summary>
     public partial class MainWindow : Window
     {
+    
+        private LockButtonTypes TakeButtonType(Grid grid1)
+        {
+            switch (grid1.Name)
+            {
+                case "GridAddEq":
+                    return LockButtonTypes.Equation;
+                case "LogicalOperatorsGrid":
+                    return LockButtonTypes.Logical;
+                case "QuantifierGrid":
+                    return LockButtonTypes.Quantifier;
+                default:
+                    return LockButtonTypes.Quantifier;
+            }
+        }
         private void AnimationOpenPanel(Grid grid1)
         {
             grid1.Visibility = Visibility.Visible;
@@ -65,10 +80,17 @@ namespace WpfAppPredic
             grid1.BeginAnimation(UIElement.OpacityProperty, opacityAnim);
             grid1.BeginAnimation(Grid.HeightProperty, heightAnim);
 
+            LockButtonTypes buttType = TakeButtonType(grid1);
+            if (buttType == LockButtonTypes.None)
+            {
+                MessageBox.Show("Неверный Grid");
+                return;
+            }
+            if (grid1.Name == "GridAddEq")
             heightAnim.Completed += (s, ev) =>
             {
                 grid1.Visibility = Visibility.Collapsed;
-                EnableQuantifierButtons(true); // Разблокируем кнопки кванторов
+                EnableAllButtons(true, buttType); // Разблокируем кнопки кванторов
             };
         }
     }
