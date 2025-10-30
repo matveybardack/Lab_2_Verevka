@@ -1,4 +1,4 @@
-﻿using ClassLibraryPredic;
+﻿using ClassLibraryPredic.Interface;
 using System;
 using System.Collections.Generic;
 

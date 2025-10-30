@@ -1,4 +1,5 @@
-﻿using ClassLibraryPredic;
+﻿using ClassLibraryPredic.Interface;
+using ClassLibraryPredic.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

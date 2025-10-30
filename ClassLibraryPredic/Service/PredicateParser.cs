@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ClassLibraryPredic.Interface;
+using ClassLibraryPredic.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
