@@ -25,12 +25,6 @@ namespace WpfAppPredic
         private List<string> originalEquationsList = new List<string>();
         private List<string> equationsWithQuantifiersList = new List<string>();
 
-        public MainWindow()
-        {
-            InitializeComponent();
-
-        }
-
         private void UpdateComboBox()
         {
             EquationsComboBox.ItemsSource = equationsWithQuantifiersList;
