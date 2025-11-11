@@ -15,9 +15,11 @@ namespace WpfAppPredic
     /// <summary>
     /// Animation for panels
     /// </summary>
+    
     public partial class MainWindow : Window
     {
-    
+        private bool isAnimating = false;
+
         private LockButtonTypes TakeButtonType(Grid grid1)
         {
             switch (grid1.Name)
@@ -34,11 +36,22 @@ namespace WpfAppPredic
         }
         private void AnimationOpenPanel(Grid grid1)
         {
+            if (isAnimating || grid1.Visibility == Visibility.Visible)
+                return;
+
+            // Останавливаем текущие анимации
+            grid1.BeginAnimation(FrameworkElement.HeightProperty, null);
+            grid1.BeginAnimation(UIElement.OpacityProperty, null);
+
             grid1.Visibility = Visibility.Visible;
             grid1.UpdateLayout();
             ParentGrid.UpdateLayout();
 
             double containerHeight = grid1.ActualHeight;
+
+            grid1.Height = 0; // Начальная высота
+            grid1.Opacity = 0; // Начальная прозрачность
+
             var heightAnim = new DoubleAnimation
             {
                 From = 0,
@@ -53,16 +66,21 @@ namespace WpfAppPredic
                 Duration = TimeSpan.FromSeconds(0.5)
             };
 
-            grid1.Height = 0; // Начальная высота
-            grid1.Opacity = 0; // Начальная прозрачность
-
             grid1.BeginAnimation(UIElement.OpacityProperty, opacityAnim);
             grid1.BeginAnimation(Grid.HeightProperty, heightAnim);
         }
 
         private void AnimationClosePanel(Grid grid1)
         {
+            if (grid1.Visibility != Visibility.Visible)
+                return;
+
+            // Останавливаем текущие анимации
+            grid1.BeginAnimation(FrameworkElement.HeightProperty, null);
+            grid1.BeginAnimation(UIElement.OpacityProperty, null);
+
             double containerHeight = grid1.ActualHeight;
+
             var heightAnim = new DoubleAnimation
             {
                 From = containerHeight,
@@ -77,21 +95,34 @@ namespace WpfAppPredic
                 Duration = TimeSpan.FromSeconds(0.5)
             };
 
+            LockButtonTypes buttType = TakeButtonType(grid1);
+
+            heightAnim.Completed += (s, e) =>
+            {
+                grid1.Visibility = Visibility.Collapsed;
+                grid1.Height = double.NaN; // Возвращаем Auto
+
+                if (buttType != LockButtonTypes.None)
+                {
+                    EnableAllButtons(true, buttType);
+                }
+            };
+
             grid1.BeginAnimation(UIElement.OpacityProperty, opacityAnim);
             grid1.BeginAnimation(Grid.HeightProperty, heightAnim);
 
-            LockButtonTypes buttType = TakeButtonType(grid1);
-            if (buttType == LockButtonTypes.None)
-            {
-                MessageBox.Show("Неверный Grid");
-                return;
-            }
-            if (grid1.Name == "GridAddEq")
-            heightAnim.Completed += (s, ev) =>
-            {
-                grid1.Visibility = Visibility.Collapsed;
-                EnableAllButtons(true, buttType); // Разблокируем кнопки кванторов
-            };
+            //if (buttType == LockButtonTypes.None)
+            //{
+            //    MessageBox.Show("Неверный Grid");
+            //    return;
+            //}
+            //if (grid1.Name == "GridAddEq")
+            //heightAnim.Completed += (s, ev) =>
+            //{
+            //    grid1.Visibility = Visibility.Collapsed;
+            //    isAnimating = false;
+            //    EnableAllButtons(true, buttType); // Разблокируем кнопки кванторов
+            //};
         }
     }
 }
