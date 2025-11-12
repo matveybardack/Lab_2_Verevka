@@ -9,13 +9,15 @@
         Title="Логический калькулятор"
         Height="600"
         Width="800"
+        MinHeight="600"
+        MinWidth="800"
         WindowStyle="ThreeDBorderWindow"
         Loaded="Window_Loaded">
     <Window.Background>
         <ImageBrush ImageSource="/God2-Sistine_Chapel.png"
                     Opacity="0.5" />
     </Window.Background>
-    
+
     <!-- TabControl с двумя вкладками -->
     <TabControl Style="{StaticResource DarkRedTabControlStyle}"
                 Margin="10">
@@ -35,22 +37,22 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
-                
+
                 <Label Style="{StaticResource WhiteLabelStyle}"
                        Content="Предикат"
                        Grid.Row="0"
                        Margin="5,5,0,5"
                        HorizontalAlignment="Left">
-                    
+
                 </Label>
-                <Button x:Name ="HelpButton"
-                        Style="{StaticResource SquareButtonStyle}" 
+                <Button x:Name="HelpButton"
+                        Style="{StaticResource SquareButtonStyle}"
                         Content="?"
                         Height="30"
                         Width="30"
                         HorizontalAlignment="Right"
                         Margin="0, 0, 5, 5"
-                        Click="HelpButton_Click"/>
+                        Click="HelpButton_Click" />
 
                 <DockPanel Grid.Row="1">
                     <TextBox x:Name="PredicateTextBox"
@@ -284,6 +286,18 @@
                             Grid.Column="0"
                             VerticalAlignment="Center"
                             Click="Button_Add_Eq_Click" />
+                    <Button Style="{StaticResource SquareButtonStyle}"
+                            Content="Отмена"
+                            FontSize="14"
+                            FontWeight="Bold"
+                            Width="80"
+                            Height="Auto"
+                            HorizontalAlignment="Center"
+                            Margin="325,10,0,0"
+                            Grid.Row="7"
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Click="CancelEquation_Click" />
                 </Grid>
                 <Grid Grid.Row="4"
                       Margin="0, 10, 0, 0">
@@ -363,6 +377,15 @@
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
+                        <Button Style="{StaticResource SquareButtonStyle}"
+                                x:Name="CancelLogicalButton"
+                                Content="Отмена"
+                                Click="CancelLogical_Click"
+                                Width="80"
+                                Height="30"
+                                Grid.Row="1"
+                                Margin="90, 5, 0, 0"
+                                HorizontalAlignment="Left" />
                         <ComboBox Style="{StaticResource DarkComboBoxStyle}"
                                   ItemContainerStyle="{StaticResource ComboBoxItemStyle}"
                                   x:Name="LogicalEquationsComboBox"
@@ -370,7 +393,7 @@
                                   HorizontalAlignment="Left"
                                   Width="200"
                                   Height="30"
-                                  Margin="5, 5, 0, 0"/>
+                                  Margin="5, 5, 0, 0" />
                         <Button Style="{StaticResource SquareButtonStyle}"
                                 x:Name="AddLogicalOperatorButton"
                                 Content="Добавить"
@@ -398,8 +421,8 @@
                             Grid.Row="4"
                             Grid.Column="0"
                             VerticalAlignment="Center"
-                            Click="Button_Add_Forall_Click" 
-                            IsEnabled="False"/>
+                            Click="Button_Add_Forall_Click"
+                            IsEnabled="False" />
                     <Button Style="{StaticResource SquareButtonStyle}"
                             x:Name="Button_Add_Exists"
                             Content="∃ (EXISTS)"
@@ -411,7 +434,7 @@
                             Grid.Column="0"
                             VerticalAlignment="Top"
                             Click="Button_Add_Exists_Click"
-                            IsEnabled="False"/>
+                            IsEnabled="False" />
                 </Grid>
                 <Grid x:Name="QuantifierGrid"
                       Visibility="Collapsed"
@@ -459,18 +482,179 @@
                             Grid.Row="4"
                             HorizontalAlignment="Center"
                             Margin="0,10,0,0" />
+                    <Button Style="{StaticResource SquareButtonStyle}"
+                            x:Name="CancelQuantifierButton"
+                            Content="Отмена"
+                            Click="CancelQuantifier_Click"
+                            Grid.Row="4"
+                            HorizontalAlignment="Center"
+                            Margin="170,10,0,0"
+                            Width="80" />
                 </Grid>
                 <Grid Grid.Row="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <!-- Левая часть - кнопка Рассчитать -->
                     <Button Style="{StaticResource SquareButtonStyle}"
-                        x:Name="Button_Calculate"
-                        Content="Рассчитать"
-                        Width="90"
-                        Height="Auto"
-                        HorizontalAlignment="Left"
-                            Margin="105,87,0,0"
-                            Grid.Column="0"
-                        VerticalAlignment="Top"
-                        Click="Button_Calculate_Click" />
+                            x:Name="Button_Calculate"
+                            Content="Рассчитать"
+                            Width="120"
+                            Height="35"
+                            HorizontalAlignment="Left"
+                            Margin="20,10,0,0"
+                            VerticalAlignment="Top"
+                            Click="Button_Calculate_Click"
+                            Grid.Column="0" />
+
+                    <!-- Правая часть - ползунки ограничений -->
+                    <StackPanel Grid.Column="1"
+                                Margin="20,10,20,0"
+                                VerticalAlignment="Top">
+
+                        <Label Style="{StaticResource WhiteLabelStyle}"
+                               Content="Ограничения области построения:"
+                               FontWeight="Bold"
+                               Margin="0,0,0,0" />
+
+                        <!-- Ограничения для X -->
+                        <Grid Margin="0,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource WhiteLabelStyle}"
+                                   HorizontalAlignment="Left"
+                                   Content="X min:"
+                                   Width="80"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="0" />
+                            <Slider x:Name="XMinSlider"
+                                    Margin="90, 0, 0, 0"
+                                    HorizontalAlignment="Left"
+                                    Minimum="-20"
+                                    Maximum="20"
+                                    Value="-10"
+                                    Width="120"
+                                    TickFrequency="2"
+                                    TickPlacement="BottomRight"
+                                    AutoToolTipPlacement="TopLeft"
+                                    VerticalAlignment="Center"
+                                    ValueChanged="RangeSlider_ValueChanged"
+                                    Grid.Column="0" />
+                            <TextBox x:Name="XMinTextBox"
+                                     HorizontalAlignment="Left"
+                                     Text="{Binding Value, ElementName=XMinSlider, StringFormat=N1}"
+                                     Width="50"
+                                     Height="30"
+                                     Margin="220,0,0,0"
+                                     Style="{StaticResource DarkTextBoxStyle}"
+                                     TextAlignment="Center"
+                                     Grid.Column="0" />
+                            <Label Style="{StaticResource WhiteLabelStyle}"
+                                   Content="X max:"
+                                   Width="80"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="1" />
+                            <Slider x:Name="XMaxSlider"
+                                    Minimum="-20"
+                                    Maximum="20"
+                                    Value="10"
+                                    Width="120"
+                                    TickFrequency="2"
+                                    TickPlacement="BottomRight"
+                                    AutoToolTipPlacement="TopLeft"
+                                    VerticalAlignment="Center"
+                                    ValueChanged="RangeSlider_ValueChanged"
+                                    Grid.Column="1"
+                                    Margin="90, 0, 0, 0"
+                                    HorizontalAlignment="Left" />
+                            <TextBox x:Name="XMaxTextBox"
+                                     Text="{Binding Value, ElementName=XMaxSlider, StringFormat=N1}"
+                                     Width="50"
+                                     Height="30"
+                                     Style="{StaticResource DarkTextBoxStyle}"
+                                     TextAlignment="Center"
+                                     Grid.Column="1"
+                                     HorizontalAlignment="Left"
+                                     Margin="220,0,0,0" />
+                        </Grid>
+
+                        <!-- Ограничения для Y -->
+                        <Grid Margin="0,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label Style="{StaticResource WhiteLabelStyle}"
+                                   Content="Y min:"
+                                   Width="80"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="Left"
+                                   Margin="10,0,0,0" />
+                            <Slider x:Name="YMinSlider"
+                                    Minimum="-20"
+                                    Maximum="20"
+                                    Value="-10"
+                                    Width="120"
+                                    TickFrequency="2"
+                                    TickPlacement="BottomRight"
+                                    AutoToolTipPlacement="TopLeft"
+                                    VerticalAlignment="Center"
+                                    ValueChanged="RangeSlider_ValueChanged"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Left"
+                                    Margin="90,0,0,0" />
+                            <TextBox x:Name="YMinTextBox"
+                                     Text="{Binding Value, ElementName=YMinSlider, StringFormat=N1}"
+                                     Width="50"
+                                     Height="30"
+                                     Style="{StaticResource DarkTextBoxStyle}"
+                                     TextAlignment="Center"
+                                     Grid.Column="0"
+                                     HorizontalAlignment="Left"
+                                     Margin="220,0,0,0" />
+
+                            <Label Style="{StaticResource WhiteLabelStyle}"
+                                   Content="Y max:"
+                                   Width="80"
+                                   VerticalAlignment="Center"
+                                   Grid.Column="1"
+                                   HorizontalAlignment="Left"
+                                   Margin="10,0,0,0" />
+                            <Slider x:Name="YMaxSlider"
+                                    Minimum="-20"
+                                    Maximum="20"
+                                    Value="10"
+                                    Width="120"
+                                    TickFrequency="2"
+                                    TickPlacement="BottomRight"
+                                    AutoToolTipPlacement="TopLeft"
+                                    VerticalAlignment="Center"
+                                    ValueChanged="RangeSlider_ValueChanged"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Left"
+                                    Margin="90,0,0,0" />
+
+                            <TextBox x:Name="YMaxTextBox"
+                                     Text="{Binding Value, ElementName=YMaxSlider, StringFormat=N1}"
+                                     Width="50"
+                                     Height="30"
+                                     Style="{StaticResource DarkTextBoxStyle}"
+                                     TextAlignment="Center"
+                                     Grid.Column="1"
+                                     HorizontalAlignment="Left"
+                                     Margin="220,0,0,0" />
+                        </Grid>
+                        <Label x:Name="RangeInfoText"
+                                   Style="{StaticResource WhiteLabelStyle}"
+                                   Content="Область построения: X ∈ [-10.0, 10.0], Y ∈ [-10.0, 10.0]"
+                                   FontSize="20"
+                                   Margin="0,10,0,0"
+                                   />
+                    </StackPanel>
                 </Grid>
             </Grid>
         </TabItem>

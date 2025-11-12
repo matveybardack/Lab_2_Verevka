@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -29,8 +30,13 @@ namespace WpfAppPredic
     {
         private bool AddingEq = false;
         private bool IsQuantifierPanelOpen = false;
-        private string SelectedQuantifier;
+        private string? SelectedQuantifier;
         private string? selectedLogicalOperator = null;
+        // Свойства для хранения ограничений
+        public double XMin { get; set; } = -10.0;
+        public double XMax { get; set; } = 10.0;
+        public double YMin { get; set; } = -10.0;
+        public double YMax { get; set; } = 10.0;
 
         private List<string> originalEquationsList = new List<string>();
         private List<string> equationsWithQuantifiersList = new List<string>();
@@ -66,8 +72,18 @@ namespace WpfAppPredic
                 equationsWithQuantifiersList.Add(equation);
 
                 UpdateComboBox();
-                PredicateTextBox.Text = string.Join(Environment.NewLine, originalEquationsList);
+
+                // Собираем все уравнения и добавляем ограничения области
+                string predicate = string.Join(Environment.NewLine, originalEquationsList);
+                //predicate += GetRangeConstraintsString(); // Добавляем ограничения
+
+                PredicateTextBox.Text = predicate;
                 EquationTextBox.Text = "";
+
+                // Закрываем панель после успешного добавления
+                AddingEq = false;
+                EnableAllButtons(true, LockButtonTypes.Equation);
+                AnimationClosePanel(GridAddEq);
             }
         }
 
@@ -214,6 +230,58 @@ namespace WpfAppPredic
             //EnableAllButtons(true, LockButtonTypes.Logical);
             //AnimationClosePanel(LogicalOperatorsGrid);
             //PredicateTextBox.IsEnabled = true;
+        }
+
+        // Обработчики отмены операций
+        private void CancelEquation_Click(object sender, RoutedEventArgs e)
+        {
+            AddingEq = false;
+            EnableMainButtons(true);
+            //EnableAllButtons(true, LockButtonTypes.Equation);
+            AnimationClosePanel(GridAddEq);
+            PredicateTextBox.IsEnabled = true;
+            EquationTextBox.Text = ""; // Очищаем поле ввода
+
+            UpdateQuantifierButtonsState();
+        }
+
+        private void CancelLogical_Click(object sender, RoutedEventArgs e)
+        {
+            EnableMainButtons(true);
+            //EnableAllButtons(true, LockButtonTypes.Logical);
+            AnimationClosePanel(LogicalOperatorsGrid);
+            PredicateTextBox.IsEnabled = true;
+            selectedLogicalOperator = null; // Сбрасываем выбранный оператор
+
+            UpdateQuantifierButtonsState();
+        }
+
+        private void CancelQuantifier_Click(object sender, RoutedEventArgs e)
+        {
+            EnableMainButtons(true);
+            //EnableAllButtons(true, LockButtonTypes.Quantifier);
+            AnimationClosePanel(QuantifierGrid);
+            PredicateTextBox.IsEnabled = true;
+            IsQuantifierPanelOpen = false;
+            SelectedQuantifier = null; // Сбрасываем выбранный квантор
+
+            UpdateQuantifierButtonsState();
+        }
+
+        private void EnableMainButtons(bool enable)
+        {
+            Button_Logical_And.IsEnabled = enable;
+            Button_Logical_Imp.IsEnabled = enable;
+            Button_Logical_Not.IsEnabled = enable;
+            Button_Logical_Or.IsEnabled = enable;
+            Button_Logical_Equiv.IsEnabled = enable;
+            Button_AddEq.IsEnabled = enable;
+
+            // Кванторы НЕ включаем здесь - их состояние определяется отдельно
+            // Button_Add_Forall.IsEnabled = enable;
+            // Button_Add_Exists.IsEnabled = enable;
+
+            if (enable) PredicateTextBox.IsEnabled = true;
         }
 
         private void AddQuantifier(object sender, RoutedEventArgs e)
@@ -393,11 +461,6 @@ namespace WpfAppPredic
             }
         }
 
-        private void Button_Calculate_Click(object sender, RoutedEventArgs e)
-        {
-            // Расчёт ;)
-        }
-
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
             var helpWindow = new HelpWindow();
@@ -408,44 +471,226 @@ namespace WpfAppPredic
         private void EnableAllButtons(bool enable, LockButtonTypes buttonType)
         {
             switch (buttonType)
-            { 
+            {
                 case LockButtonTypes.Equation:
-                    Button_Add_Forall.IsEnabled = enable;
-                    Button_Add_Exists.IsEnabled = enable;
-                    Button_Logical_And.IsEnabled = enable;
-                    Button_Logical_Imp.IsEnabled = enable;
-                    Button_Logical_Not.IsEnabled = enable;
-                    Button_Logical_Or.IsEnabled = enable;
-                    Button_Logical_Equiv.IsEnabled = enable;
-                    Button_AddEq.IsEnabled = enable;
-                    if (enable) PredicateTextBox.IsEnabled = true;
+                    EnableMainButtons(enable);
+                    // Кванторы включаем только если enable=true И есть уравнения
+                    if (enable)
+                    {
+                        UpdateQuantifierButtonsState(); // Проверяем состояние кванторов
+                    }
+                    else
+                    {
+                        Button_Add_Forall.IsEnabled = false;
+                        Button_Add_Exists.IsEnabled = false;
+                    }
                     break;
                 case LockButtonTypes.Logical:
                     Button_Add_Forall.IsEnabled = enable;
                     Button_Add_Exists.IsEnabled = enable;
                     Button_AddEq.IsEnabled = enable;
-                    if (enable) PredicateTextBox.IsEnabled = true;
+                    // Логические кнопки остаются активными для возможности выбора другого оператора
                     break;
                 case LockButtonTypes.Quantifier:
-                    Button_Add_Forall.IsEnabled = enable;
-                    Button_Add_Exists.IsEnabled = enable;
-                    Button_Logical_And.IsEnabled = enable;
-                    Button_Logical_Imp.IsEnabled = enable;
-                    Button_Logical_Not.IsEnabled = enable;
-                    Button_Logical_Or.IsEnabled = enable;
-                    Button_Logical_Equiv.IsEnabled = enable;
-                    Button_AddEq.IsEnabled = enable;
-                    if (enable) PredicateTextBox.IsEnabled = true;
+                    EnableMainButtons(enable);
+                    // Кванторы включаем только если enable=true И есть уравнения
+                    if (enable)
+                    {
+                        UpdateQuantifierButtonsState(); // Проверяем состояние кванторов
+                    }
+                    else
+                    {
+                        Button_Add_Forall.IsEnabled = false;
+                        Button_Add_Exists.IsEnabled = false;
+                    }
                     break;
                 default:
                     break;
             }
+
+            // Всегда разблокируем поле предиката при enable
+            if (enable)
+            {
+                PredicateTextBox.IsEnabled = true;
+            }
+        }
+
+        // Обновим метод для кнопки "Рассчитать"
+        private void Button_Calculate_Click(object sender, RoutedEventArgs e)
+        {
+            // Проверяем, есть ли уравнения для расчета
+            if (string.IsNullOrWhiteSpace(PredicateTextBox.Text) ||
+                (!PredicateTextBox.Text.Contains("x") && !PredicateTextBox.Text.Contains("y")))
+            {
+                MessageBox.Show("Добавьте уравнения с переменными x и y перед расчетом.",
+                               "Нет уравнений",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Warning);
+                return;
+            }
+
+            // Получаем текущий предикат (без предыдущих ограничений если они есть)
+            string predicate = PredicateTextBox.Text.Trim();
+
+            // Удаляем предыдущие ограничения если они есть
+            predicate = RemoveExistingRangeConstraints(predicate);
+
+            // Добавляем новые ограничения только при нажатии кнопки
+            string rangeConstraints = GetRangeConstraintsString();
+            string finalPredicate = predicate + rangeConstraints;
+
+            // Обновляем текстовое поле
+            PredicateTextBox.Text = finalPredicate;
+
+            // Здесь будет логика построения графика
+            // CalculateAndPlot(); - этот метод вы реализуете позже
+
+            MessageBox.Show($"Предикат с ограничениями области:\n{finalPredicate}\n\n" +
+                           $"Область построения:\n" +
+                           $"X: от {XMin:F1} до {XMax:F1}\n" +
+                           $"Y: от {YMin:F1} до {YMax:F1}",
+                           "Готово к расчету",
+                           MessageBoxButton.OK,
+                           MessageBoxImage.Information);
+        }
+
+        // Метод для удаления существующих ограничений из предиката
+        private string RemoveExistingRangeConstraints(string predicate)
+        {
+            if (predicate.Contains(" x in [") && predicate.Contains("]; y in ["))
+            {
+                int rangeIndex = predicate.IndexOf(" x in [");
+                if (rangeIndex > 0)
+                {
+                    return predicate.Substring(0, rangeIndex).Trim();
+                }
+            }
+            return predicate;
+        }
+
+        // Обновленный обработчик изменения ползунков
+        private void RangeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (XMinSlider != null && XMaxSlider != null && YMinSlider != null && YMaxSlider != null)
+            {
+                // Обновляем значения
+                XMin = XMinSlider.Value;
+                XMax = XMaxSlider.Value;
+                YMin = YMinSlider.Value;
+                YMax = YMaxSlider.Value;
+
+                // Проверяем корректность диапазонов
+                ValidateRanges();
+
+                // Обновляем текстовую информацию
+                UpdateRangeInfoText();
+            }
+        }
+
+        // Метод проверки корректности диапазонов
+        private void ValidateRanges()
+        {
+            // Гарантируем, что min <= max
+            if (XMin > XMax)
+            {
+                XMin = XMax;
+                XMinSlider.Value = XMax;
+            }
+
+            if (YMin > YMax)
+            {
+                YMin = YMax;
+                YMinSlider.Value = YMax;
+            }
+        }
+
+        // Метод для получения строки с ограничениями области
+        private string GetRangeConstraintsString()
+        {
+            return $" x in [{XMin:F1}, {XMax:F1}]; y in [{YMin:F1}, {YMax:F1}]";
+        }
+
+        // Метод для получения кортежа с ограничениями (удобно для построения графика)
+        public (double xMin, double xMax, double yMin, double yMax) GetPlotRange()
+        {
+            return (XMin, XMax, YMin, YMax);
+        }
+
+        // Метод обновления текстовой информации
+        private void UpdateRangeInfoText()
+        {
+            if (RangeInfoText != null)
+            {
+                RangeInfoText.Content = $"Область построения: X ∈ [{XMin:F1}, {XMax:F1}], Y ∈ [{YMin:F1}, {YMax:F1}]";
+            }
+        }
+
+        private void RangeTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                if (double.TryParse(textBox.Text, out double value))
+                {
+                    // Ограничиваем значение в допустимых пределах
+                    value = Math.Max(-20, Math.Min(20, value));
+
+                    // Обновляем соответствующий слайдер
+                    switch (textBox.Name)
+                    {
+                        case "XMinTextBox":
+                            XMinSlider.Value = value;
+                            break;
+                        case "XMaxTextBox":
+                            XMaxSlider.Value = value;
+                            break;
+                        case "YMinTextBox":
+                            YMinSlider.Value = value;
+                            break;
+                        case "YMaxTextBox":
+                            YMaxSlider.Value = value;
+                            break;
+                    }
+                }
+                else
+                {
+                    // Восстанавливаем предыдущее значение при ошибке
+                    switch (textBox.Name)
+                    {
+                        case "XMinTextBox":
+                            textBox.Text = XMinSlider.Value.ToString("F1");
+                            break;
+                        case "XMaxTextBox":
+                            textBox.Text = XMaxSlider.Value.ToString("F1");
+                            break;
+                        case "YMinTextBox":
+                            textBox.Text = YMinSlider.Value.ToString("F1");
+                            break;
+                        case "YMaxTextBox":
+                            textBox.Text = YMaxSlider.Value.ToString("F1");
+                            break;
+                    }
+                }
+
+                ValidateRanges();
+                UpdateRangeInfoText();
+            }
+        }
+
+        // Обработчики для текстовых полей
+        private void InitializeRangeControls()
+        {
+            XMinTextBox.LostFocus += RangeTextBox_LostFocus;
+            XMaxTextBox.LostFocus += RangeTextBox_LostFocus;
+            YMinTextBox.LostFocus += RangeTextBox_LostFocus;
+            YMaxTextBox.LostFocus += RangeTextBox_LostFocus;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             PredicateTextBox.TextChanged += PredicateTextBox_TextChanged;
             UpdateQuantifierButtonsState();
+            InitializeRangeControls();
+            
         }
 
         private void PredicateTextBox_TextChanged(object sender, TextChangedEventArgs e)
