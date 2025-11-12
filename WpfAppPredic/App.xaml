@@ -29,7 +29,7 @@
         <Style x:Key="DarkRedTabControlStyle"
                TargetType="{x:Type TabControl}">
             <Setter Property="Background"
-                    Value="{StaticResource DarkRedBrush}" />
+                    Value="{StaticResource BlackBrush}" />
             <Setter Property="BorderBrush"
                     Value="{StaticResource DarkRedBrush}" />
             <Setter Property="BorderThickness"
