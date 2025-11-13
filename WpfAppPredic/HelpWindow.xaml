@@ -51,7 +51,7 @@
                                    Foreground="{StaticResource WhiteBrush}"
                                    FontWeight="Bold"
                                    Margin="0,10,0,5" />
-                        <TextBlock Text="• Математические: +, -, *, /, // (целочисленное деление), % (остаток), ^2 (квадрат), ABS()"
+                        <TextBlock Text="• Математические: +, -, *, /"
                                    Foreground="{StaticResource WhiteBrush}"
                                    Margin="10,0,0,2" />
                         <TextBlock Text="• Сравнения: &lt;, &lt;=, ==, >=, >"

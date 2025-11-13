@@ -666,9 +666,12 @@
                 </Grid>
             </Grid>
         </TabItem>
-        <TabItem Style="{StaticResource DarkRedTabItemStyle}"
+        <TabItem x:Name= "Graph"
+                 Style="{StaticResource DarkRedTabItemStyle}"
                  Header="График"
-                 >
+                 HorizontalAlignment="Left"
+                 Margin="-2,-2,0,0"
+                 Width="74">
             <Grid>
                 <oxy:PlotView x:Name="TestModel" />
             </Grid>

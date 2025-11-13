@@ -700,8 +700,17 @@ namespace WpfAppPredic
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (PredicateTextBox.Text !=  String.Empty)
-                ShowGraph();
+            if (PredicateTextBox.Text != String.Empty && Graph.IsSelected == true) { 
+                try
+                {
+                    ShowGraph();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Введен неверный предикат");
+                }
+            }
+
         }
         //private void HelpButton_Click(object sender, RoutedEventArgs e)
         //{
