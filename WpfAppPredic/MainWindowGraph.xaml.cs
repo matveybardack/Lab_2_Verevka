@@ -42,7 +42,7 @@ namespace WpfAppPredic
             var predicate = factory(domain);
 
             // Создаём PlotModel
-            var model = PredicatePlotter.CreatePlotModel(predicate, domain, "y < 2*x && x > 0");
+            var model = PredicatePlotter.CreatePlotModel(predicate, domain, "∀ x : x < 2*y");
 
             // Передаём model в OxyPlot WPF PlotView
             TestModel.Model = model;

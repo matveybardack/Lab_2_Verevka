@@ -16,7 +16,7 @@ public static class PredicatePlotter
     {
         var vars = domain.Variables.ToArray();
         if (vars.Length != 2)
-            throw new System.ArgumentException("Метод поддерживает ровно 2 переменные для графика.");
+            throw new ArgumentException("Метод поддерживает ровно 2 переменные для графика.");
 
         string xVar = vars[0];
         string yVar = vars[1];
