@@ -20,7 +20,8 @@
 
     <!-- TabControl с двумя вкладками -->
     <TabControl Style="{StaticResource DarkRedTabControlStyle}"
-                Margin="10">
+                Margin="10"
+                SelectionChanged="TabControl_SelectionChanged">
         <TabItem Style="{StaticResource DarkRedTabItemStyle}"
                  Header="Редактор предиката">
             <Grid x:Name="ParentGrid">
@@ -186,7 +187,8 @@
                             Grid.Row="4"
                             Grid.Column="0"
                             VerticalAlignment="Center"
-                            Click="Button_Add_IntDiv_Click" />
+                            Click="Button_Add_IntDiv_Click"
+                            Visibility="Collapsed"/>
                     <Button Style="{StaticResource SquareButtonStyle}"
                             Content="x²"
                             Width="60"
@@ -196,7 +198,8 @@
                             Grid.Row="4"
                             Grid.Column="0"
                             VerticalAlignment="Center"
-                            Click="Button_Add_Deg_Click" />
+                            Click="Button_Add_Deg_Click"
+                            Visibility="Collapsed"/>
                     <Button Style="{StaticResource SquareButtonStyle}"
                             Content="% (MOD)"
                             Width="95"
@@ -206,7 +209,8 @@
                             Grid.Row="4"
                             Grid.Column="0"
                             VerticalAlignment="Center"
-                            Click="Button_Add_Mod_Click" />
+                            Click="Button_Add_Mod_Click"
+                            Visibility="Collapsed"/>
                     <Button Style="{StaticResource SquareButtonStyle}"
                             Content="ABS"
                             Width="70"
@@ -216,7 +220,8 @@
                             Grid.Row="4"
                             Grid.Column="0"
                             VerticalAlignment="Center"
-                            Click="Button_Add_Abs_Click" />
+                            Click="Button_Add_Abs_Click"
+                            Visibility="Collapsed"/>
 
                     <Label Style="{StaticResource WhiteLabelStyle}"
                            Content="Добавить оператор сравнения"
@@ -662,7 +667,8 @@
             </Grid>
         </TabItem>
         <TabItem Style="{StaticResource DarkRedTabItemStyle}"
-                 Header="График">
+                 Header="График"
+                 >
             <Grid>
                 <oxy:PlotView x:Name="TestModel" />
             </Grid>

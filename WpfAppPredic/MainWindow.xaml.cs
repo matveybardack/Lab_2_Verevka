@@ -697,6 +697,12 @@ namespace WpfAppPredic
         {
             UpdateEquationsFromPredicate();
         }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (PredicateTextBox.Text !=  String.Empty)
+                ShowGraph();
+        }
         //private void HelpButton_Click(object sender, RoutedEventArgs e)
         //{
         //    HelpPopup.IsOpen = !HelpPopup.IsOpen;
